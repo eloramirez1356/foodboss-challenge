@@ -1,0 +1,7 @@
+{
+    "user": "postgres",
+    "host": "fullstack-interview-fb-db.c8aokk8dwuf4.us-east-2.rds.amazonaws.com",
+    "database": "postgres",
+    "password": "foodboss",
+    "port": 5432
+}
