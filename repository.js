@@ -11,24 +11,112 @@ async function executeQuery(query){
         console.log("previo a movies")
         const movies = await pool.query(query);
         console.log(movies)
-        await pool.end()
+        //await pool.end()
+        return movies.rows
     }catch(err){
         console.log(err)
     }
-}
-
-async function getPaginationMovies(){
-    const pageNumber = 1
-    const pageSize = 10
-    const query = 'SELECT DISTINCT titlebasics.primaryTitle, titlebasics.titleType,titlebasics.startYear, titlebasics.runtimeMinutes, array_agg(DISTINCT namebasics.primaryName) ' +
-    'FROM titleakas ' + 
-    'INNER JOIN titlebasics ON titleakas.titleid = titlebasics.tconst ' + 
-    'INNER JOIN titlecrew ON titlecrew.tconst = titleakas.titleid ' + 
-    'INNER JOIN namebasics ON namebasics.knownfortitles = titleakas.titleid ' + 
-    'GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes ' +
-    'LIMIT ' + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize;
-    executeQuery(query)
     
 }
 
+async function getPaginationMovies(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+    
+}
+
+async function getPaginationMoviesAscendingOrder(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' ORDER BY title LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+async function getPaginationMoviesDescendingOrder(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' ORDER BY title DESC LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+async function getPaginationMoviesByAscendingYear(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+async function getPaginationMoviesByDescendingYear(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+async function getPaginationMoviesByAscendingDuration(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+async function getPaginationMoviesByDescendingDuration(page){
+    const pageNumber = page
+    const pageSize = 10
+    const query = "SELECT titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titles.titleid, titlebasics.runtimeMinutes, string_agg(DISTINCT namebasics.primaryName, ',') " +  
+    "FROM (SELECT titleid FROM titleakas WHERE isoriginaltitle='1' LIMIT " + pageSize + ' OFFSET ' + (pageNumber-1) * pageSize + " ) AS titles " + 
+    "INNER JOIN titlebasics ON titles.titleid = titlebasics.tconst " + 
+    "INNER JOIN titlecrew ON titlecrew.tconst = titles.titleid " +
+    "INNER JOIN namebasics ON namebasics.nconst = titlecrew.directors " + 
+    "GROUP BY titlebasics.primaryTitle, titlebasics.titleType, titlebasics.startYear, titlebasics.runtimeMinutes, titles.titleid";
+    const movies = await executeQuery(query)
+    return movies
+}
+
+
+
 module.exports.getPaginationMovies = getPaginationMovies;
+module.exports.getPaginationMoviesAscendingOrder = getPaginationMoviesAscendingOrder;
+module.exports.getPaginationMoviesDescendingOrder = getPaginationMoviesDescendingOrder;
+module.exports.getPaginationMoviesByAscendingYear = getPaginationMoviesByAscendingYear;
+module.exports.getPaginationMoviesByDescendingYear = getPaginationMoviesByDescendingYear;
+module.exports.getPaginationMoviesByAscendingDuration = getPaginationMoviesByAscendingDuration;
+module.exports.getPaginationMoviesByDescendingDuration = getPaginationMoviesByDescendingDuration;
