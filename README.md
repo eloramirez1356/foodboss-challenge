@@ -13,5 +13,5 @@ Npm install in the root folder of foodboss-challenge for installing the dependen
 
 Test the application in the web browser
 
-INFORMATION: I have tried to develop the bonus for redux but I did not have time. Nevertheless I will finish it during this week. 
+*INFORMATION*: I have tried to develop the bonus for redux but I did not have time. Nevertheless I will finish it during this week. 
 Thanks!
