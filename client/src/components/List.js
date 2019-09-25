@@ -60,7 +60,7 @@ class List extends Component {
     async handlePrevPage(e){
         e.preventDefault();
         const {page, lastCall, lastOrder} = this.state;
-        if(page != 1){
+        if(page !== 1){
             this.setState({isLoading: true});
             try{
                 const movies = await lastCall(page-1, lastOrder);
