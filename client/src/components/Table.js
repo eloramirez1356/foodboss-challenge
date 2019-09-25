@@ -1,6 +1,23 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Row from './Row';
+import {connect} from 'react-redux';
+import * as actions from '../redux/actions';
+
+const mapStateToProps = store => ({
+    moviesDisplayed: store.moviesDisplayed
+})
+
+const mapDispatchToProps = dispatch =>({
+    switchDisplayLongest: ()=>dispatch(actions.switchDisplayLongest()),
+    switchDisplayShortest: ()=>dispatch(actions.switchDisplayShortest()),
+    switchDisplayNewest: ()=>dispatch(actions.switchDisplayNewest()),
+    switchDisplayOldest: ()=>dispatch(actions.switchDisplayOldest()),
+    switchDisplayNoFilter: ()=>dispatch(actions.switchDisplayNoFilter()),
+    switchDisplayMultipleDirectors: ()=>(actions.switchDisplayMultipleDirectors()),
+    switchDisplayAlphabetically: ()=>(actions.switchDisplayAlphabetically()),
+    switchDisplayAlphabeticallyInverse: ()=>(actions.switchDisplayAlphabeticallyInverse())
+})
 
 class Table extends Component {
     constructor (props){
@@ -11,17 +28,15 @@ class Table extends Component {
     }
 
     render() {
-        const {dataMovies, nextPage, prevPage, alfAsc, alfDsc, isOrderedAsc, isLongestDuration, isNewest, yearAsc, yearDsc, longstDuration, shortstDuration, hasMultipleDirectors, noFilter, multipleDirectors} = this.props;
-        console.log("Datamovies va");
-        console.log(dataMovies);
+        const {dataMovies, nextPage, prevPage, alfAsc, alfDsc, yearAsc, yearDsc, longstDuration, shortstDuration, noFilter, multipleDirectors} = this.props;
         return (<div className="tableMovies">
         <h1>IMDB Movies Table</h1>
         <div className="buttons">
-            {isOrderedAsc ? <input type="button" onClick={alfDsc} value="Z-A" className="detail-button"/> : <input type="button" onClick={alfAsc} value="A-Z" className="detail-button"/>}
-            {isLongestDuration ? <input type="button" onClick={shortstDuration} value="Shortest Duration" className="detail-button"/> : <input type="button" onClick={longstDuration} value="Longest Duration" className="detail-button"/>}
-            {isNewest ? <input type="button" onClick={yearAsc} value="Oldests" className="detail-button"/> : <input type="button" onClick={yearDsc} value="Newests" className="detail-button"/>}
-            {hasMultipleDirectors ? null : <input type="button" onClick={multipleDirectors} value="Multiple directors" className="detail-button"/>}
-            <input type="button" onClick={noFilter} value="No filter" className="detail-button"/>
+            {this.props.moviesDisplayed === 'ALPHABETICALLY' ? <input type="button" onClick={()=>{alfDsc();this.props.switchDisplayAlphabeticallyInverse()}} value="Z-A" className="detail-button"/> : <input type="button" onClick={()=>{alfAsc();this.props.switchDisplayAlphabetically();}} value="A-Z" className="detail-button"/>}
+            {this.props.moviesDisplayed === 'LONGEST' ? <input type="button" onClick={()=>{shortstDuration();this.props.switchDisplayShortest();}} value="Shortest Duration" className="detail-button"/> : <input type="button" onClick={()=>{ longstDuration(); this.props.switchDisplayLongest(); }} value="Longest Duration" className="detail-button"/>}
+            {this.props.moviesDisplayed === 'NEWEST' ? <input type="button" onClick={()=>{yearAsc();this.props.switchDisplayOldest();}} value="Oldests" className="detail-button"/> : <input type="button" onClick={()=>{yearDsc(); this.props.switchDisplayNewest();}} value="Newests" className="detail-button"/>}
+            {this.props.moviesDisplayed === 'MULTIPLE_DIRECTORS' ? null : <input type="button" onClick={()=>{multipleDirectors();this.props.switchDisplayMultipleDirectors();}} value="Multiple directors" className="detail-button"/>}
+            <input type="button" onClick={()=>{noFilter();this.props.switchDisplayNoFilter();}} value="No filter" className="detail-button"/>
         </div>
         <table id="simple-board">
             <tbody>
@@ -56,11 +71,8 @@ Table.propTypes = {
     alfDsc: PropTypes.func.isRequired,
     yearAsc: PropTypes.func.isRequired,
     yearDsc: PropTypes.func.isRequired,
-    isOrderedAsc: PropTypes.bool.isRequired,
-    isLongestDuration: PropTypes.bool.isRequired,
-    hasMultipleDirectors: PropTypes.bool.isRequired,
     noFilter: PropTypes.func.isRequired,
     multipleDirectors: PropTypes.func.isRequired
 };
 
-export default Table;
+export default connect(mapStateToProps, mapDispatchToProps)(Table);
