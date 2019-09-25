@@ -7,7 +7,6 @@ const app = express()
 app.use(cors())
 
 app.get('/:page',async (req, res)=>{
-    console.log(req.params.page)
     const paginatedMovies = await repo.getPaginationMovies(req.params.page)
     res.send(paginatedMovies);
 })

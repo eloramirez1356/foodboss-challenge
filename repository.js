@@ -6,9 +6,7 @@ const pool = new Pool(dbConfig)
 async function executeQuery(query){
     try{
         await pool.connect()
-        console.log("previo a movies")
         const movies = await pool.query(query);
-        console.log(movies)
         return movies.rows
     }catch(err){
         console.log(err)

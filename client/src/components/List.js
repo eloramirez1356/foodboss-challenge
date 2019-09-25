@@ -3,8 +3,7 @@ import Loading from './Loading';
 //import Header from './Header';
 import Table from './Table';
 import { getMovies, getMoviesAlphabetically, getMoviesByYear, getMoviesByDuration, getMoviesWithMultipleDirectors} from '../api/api';
-import {switchDisplay} from '../redux/actions';
-import {useDispatch} from 'react-redux';
+
 
 class List extends Component {
     constructor(props){
@@ -118,7 +117,6 @@ class List extends Component {
         this.setState({isLoading: true});
         try{
             const longestMovies = await getMoviesByDuration(1, 'DESC');
-            //this.props.store.dispatch(switchDisplay());
             this.setState({movies:longestMovies, isLoading: false, page:1, longestDuration:true, lastCall: getMoviesByDuration, lastOrder: 'DESC',  multipleDirectors: false, newest: false, ascendingAlfabetically: false});
         }catch(error){
             this.setState({error, isLoading: false});
