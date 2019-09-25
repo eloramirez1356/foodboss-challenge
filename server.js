@@ -12,34 +12,24 @@ app.get('/:page',async (req, res)=>{
     res.send(paginatedMovies);
 })
 
-app.get('/ascending/:page', async (req, res)=>{
-    const paginatedMoviesAscendingOrder = await repo.getPaginationMoviesAscendingOrder(req.params.page)
-    res.send(paginatedMoviesAscendingOrder);
+app.get('/alphabetically/:page/:order', async (req, res)=>{
+    const paginatedMoviesAlphabetically = await repo.getPaginationMoviesAlphabetically(req.params.page, req.params.order)
+    res.send(paginatedMoviesAlphabetically);
 })
 
-app.get('/descending/:page', async (req, res)=>{
-    const paginatedMoviesDescendingOrder = await repo.getPaginationMoviesDescendingOrder(req.params.page)
-    res.send(paginatedMoviesDescendingOrder);
+app.get('/year/:page/:order', async (req, res)=>{
+    const paginatedMoviesByYear = await repo.getPaginationMoviesByYear(req.params.page, req.params.order)
+    res.send(paginatedMoviesByYear);
 })
 
-app.get('/ascendingYear/:page', async (req, res)=>{
-    const paginatedMoviesAscendingYearOrder = await repo.getPaginationMoviesByAscendingYear(req.params.page)
-    res.send(paginatedMoviesAscendingYearOrder);
+app.get('/duration/:page/:order', async (req, res)=>{
+    const paginatedMoviesByDuration = await repo.getPaginationMoviesByDuration(req.params.page, req.params.order)
+    res.send(paginatedMoviesByDuration);
 })
 
-app.get('/descendingYear/:page', async (req, res)=>{
-    const paginatedMoviesDescendingYearOrder = await repo.getPaginationMoviesByDescendingYear(req.params.page)
-    res.send(paginatedMoviesDescendingYearOrder);
-})
-
-app.get('/longests/:page', async (req, res)=>{
-    const paginatedLongestsMovies = await repo.getPaginationMoviesByAscendingDuration(req.params.page)
-    res.send(paginatedLongestsMovies);
-})
-
-app.get('/shortests/:page', async (req, res)=>{
-    const paginatedShortestsMovies = await repo.getPaginationMoviesByDescendingDuration(req.params.page)
-    res.send(paginatedShortestsMovies);
+app.get('/multipleDirectors/:page', async (req, res)=>{
+    const paginatedMoviesMultipleDirectors = await repo.getPaginationMoviesMoreThanOneDirector(req.params.page)
+    res.send(paginatedMoviesMultipleDirectors);
 })
 
 

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import Loading from './Loading';
 //import Header from './Header';
 import Table from './Table';
-
-import { getMovies, getMoviesAlphabeticallyAsc, getMoviesAlphabeticallyDsc, getMoviesByYearAsc, getMoviesByYearDsc, getLongestMovies, getShortestMovies} from '../api/api';
+import { getMovies, getMoviesAlphabetically, getMoviesByYear, getMoviesByDuration, getMoviesWithMultipleDirectors} from '../api/api';
+import {switchDisplay} from '../redux/actions';
+import {useDispatch} from 'react-redux';
 
 class List extends Component {
     constructor(props){
@@ -15,7 +16,10 @@ class List extends Component {
             page: 1,
             ascendingAlfabetically:false,
             longestDuration: false,
-            newests: false
+            newests: false,
+            lastCall: getMovies,
+            lasOrder: 'DESC',
+            multipleDirectors: false
         };
         this.handleNextPage = this.handleNextPage.bind(this);
         this.handlePrevPage = this.handlePrevPage.bind(this);
@@ -25,6 +29,8 @@ class List extends Component {
         this.handleDataByYearDsc = this.handleDataByYearDsc.bind(this);
         this.handleDataByLongestDuration = this.handleDataByLongestDuration.bind(this);
         this.handleDataByShortestDuration = this.handleDataByShortestDuration.bind(this);
+        this.handleDataWithoutFilters = this.handleDataWithoutFilters.bind(this);
+        this.handleDataByMultipleDirectors = this.handleDataByMultipleDirectors.bind(this);
     }
       
     async componentDidMount(){
@@ -41,10 +47,10 @@ class List extends Component {
 
     async handleNextPage(e){
         e.preventDefault();
-        const {page} = this.state;
+        const {page, lastCall, lastOrder} = this.state;
         this.setState({isLoading: true});
         try{
-            const movies = await getMovies(page+1);
+            const movies = await lastCall(page+1, lastOrder);
             this.setState({movies, isLoading: false});
         }catch(error){
             this.setState({error, isLoading: false});
@@ -54,11 +60,11 @@ class List extends Component {
 
     async handlePrevPage(e){
         e.preventDefault();
-        const {page} = this.state;
+        const {page, lastCall, lastOrder} = this.state;
         if(page != 1){
             this.setState({isLoading: true});
             try{
-                const movies = await getMovies(page-1);
+                const movies = await lastCall(page-1, lastOrder);
                 this.setState({movies, isLoading: false});
             }catch(error){
                 this.setState({error, isLoading: false});
@@ -71,8 +77,8 @@ class List extends Component {
     async handleDataAlphabeticallyAsc(e){
         this.setState({isLoading: true});
         try{
-            const moviesAlphabAsc = await getMoviesAlphabeticallyAsc(1);
-            this.setState({movies:moviesAlphabAsc, isLoading: false, page:1, ascendingAlfabetically:true});
+            const moviesAlphabAsc = await getMoviesAlphabetically(1, 'ASC');
+            this.setState({movies:moviesAlphabAsc, isLoading: false, page:1, ascendingAlfabetically:true, lastCall: getMoviesAlphabetically, lastOrder: 'ASC', multipleDirectors: false, longestDuration: false, newest:false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
@@ -81,8 +87,8 @@ class List extends Component {
     async handleDataAlphabeticallyDesc(e){
         this.setState({isLoading: true});
         try{
-            const moviesAlphabDsc = await getMoviesAlphabeticallyDsc(1);
-            this.setState({movies:moviesAlphabDsc, isLoading: false, page:1, ascendingAlfabetically:false});
+            const moviesAlphabDsc = await getMoviesAlphabetically(1, 'DESC');
+            this.setState({movies:moviesAlphabDsc, isLoading: false, page:1, ascendingAlfabetically:false, lastCall: getMoviesAlphabetically, lastOrder: 'DESC', multipleDirectors: false, longestDuration: false, newest:false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
@@ -91,8 +97,8 @@ class List extends Component {
     async handleDataByYearAsc(e){
         this.setState({isLoading: true});
         try{
-            const moviesAscendingYear = await getMoviesByYearAsc(1);
-            this.setState({movies:moviesAscendingYear, isLoading: false, page:1, newests:false});
+            const moviesAscendingYear = await getMoviesByYear(1, 'ASC');
+            this.setState({movies:moviesAscendingYear, isLoading: false, page:1, newests:false, lastCall: getMoviesByYear, lastOrder: 'ASC', multipleDirectors: false, longestDuration: false, ascendingAlfabetically: false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
@@ -101,8 +107,8 @@ class List extends Component {
     async handleDataByYearDsc(e){
         this.setState({isLoading: true});
         try{
-            const moviesDescendingYear = await getMoviesByYearDsc(1);
-            this.setState({movies:moviesDescendingYear, isLoading: false, page:1, newests:true});
+            const moviesDescendingYear = await getMoviesByYear(1, 'DESC');
+            this.setState({movies:moviesDescendingYear, isLoading: false, page:1, newests:true, lastCall: getMoviesByYear, lastOrder: 'DESC',  multipleDirectors: false, longestDuration: false, ascendingAlfabetically: false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
@@ -111,8 +117,9 @@ class List extends Component {
     async handleDataByLongestDuration(e){
         this.setState({isLoading: true});
         try{
-            const longestMovies = await getLongestMovies(1);
-            this.setState({movies:longestMovies, isLoading: false, page:1, longestDuration:true});
+            const longestMovies = await getMoviesByDuration(1, 'DESC');
+            //this.props.store.dispatch(switchDisplay());
+            this.setState({movies:longestMovies, isLoading: false, page:1, longestDuration:true, lastCall: getMoviesByDuration, lastOrder: 'DESC',  multipleDirectors: false, newest: false, ascendingAlfabetically: false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
@@ -121,15 +128,36 @@ class List extends Component {
     async handleDataByShortestDuration(e){
         this.setState({isLoading: true});
         try{
-            const shortestMovies = await getShortestMovies(1);
-            this.setState({movies:shortestMovies, isLoading: false, page:1, longestDuration:false});
+            const shortestMovies = await getMoviesByDuration(1, 'ASC');
+            this.setState({movies:shortestMovies, isLoading: false, page:1, longestDuration:false, lastCall: getMoviesByDuration, lastOrder: 'ASC', multipleDirectors: false, newest: false, ascendingAlfabetically: false});
         }catch(error){
             this.setState({error, isLoading: false});
         }
     }
 
+    async handleDataByMultipleDirectors(e){
+        this.setState({isLoading: true});
+        try{
+            const moviesWithMultipleDirectors = await getMoviesWithMultipleDirectors(1);
+            this.setState({movies:moviesWithMultipleDirectors, isLoading: false, page:1, lastCall: getMoviesWithMultipleDirectors, multipleDirectors: true, longestDuration: false, newest: false, ascendingAlfabetically: false});
+        }catch(error){
+            this.setState({error, isLoading: false});
+        }
+    }
+
+    async handleDataWithoutFilters(e){
+        this.setState({isLoading: true});
+        try{
+            const moviesWithoutFilter = await getMovies(1);
+            this.setState({movies:moviesWithoutFilter, isLoading: false, page:1, lastCall: getMovies, multipleDirectors: false, longestDuration: false, newest:false, ascendingAlfabetically:false });
+        }catch(error){
+            this.setState({error, isLoading: false});
+        }
+    }
+
+
     render(){
-        const {movies, isLoading, error, page, ascendingAlfabetically, longestDuration, newests} = this.state;
+        const {movies, isLoading, error, page, ascendingAlfabetically, longestDuration, newests, multipleDirectors} = this.state;
         if(error){
             return (<div> ERROR </div>);
         }
@@ -138,8 +166,9 @@ class List extends Component {
             <div className="container">
                 {movies ? <Table dataMovies={movies} page={page} nextPage={this.handleNextPage} prevPage={this.handlePrevPage} 
                 alfAsc={this.handleDataAlphabeticallyAsc} alfDsc={this.handleDataAlphabeticallyDesc} yearAsc={this.handleDataByYearAsc} yearDsc={this.handleDataByYearDsc}
-                longstDuration={this.handleDataByLongestDuration} shortstDuration={this.handleDataByShortestDuration}
-                isOrderedAsc={ascendingAlfabetically} isLongestDuration={longestDuration} isNewest={newests}></Table> : null}
+                longstDuration={this.handleDataByLongestDuration} shortstDuration={this.handleDataByShortestDuration} noFilter={this.handleDataWithoutFilters}
+                multipleDirectors={this.handleDataByMultipleDirectors}
+                isOrderedAsc={ascendingAlfabetically} isLongestDuration={longestDuration} isNewest={newests} hasMultipleDirectors={multipleDirectors}></Table> : null}
             </div>
         </React.Fragment>);
     }

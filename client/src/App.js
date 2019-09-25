@@ -1,10 +1,12 @@
-import React, {Component} from 'react';
+import React from 'react';
 import List from './components/List';
 import './App.css';
+import { useSelector } from 'react-redux';
 
-class App extends Component {
-  render() {
+function App() {
+  const displayLongest = useSelector(state => state.displayButtonLongest);
+  console.log("uee" + displayLongest);
     return (<List/>);
   }
-}
+
 export default App;

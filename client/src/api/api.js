@@ -7,54 +7,36 @@ export const getMovies = async (page) => {
 	}
 }
 
-export const getMoviesAlphabeticallyAsc = async (page) => {
+export const getMoviesAlphabetically = async (page, order='DESC') => {
 	try{
-        const resp = await fetch('http://localhost:3001/ascending/' + page);
+        const resp = await fetch('http://localhost:3001/alphabetically/' + page + '/' + order);
 		return resp.json();
 	}catch(error){
 		throw error;
 	}
 }
 
-export const getMoviesAlphabeticallyDsc = async (page) => {
+export const getMoviesByYear = async (page, order) => {
 	try{
-        const resp = await fetch('http://localhost:3001/descending/' + page);
+        const resp = await fetch('http://localhost:3001/year/' + page + '/' + order);
 		return resp.json();
 	}catch(error){
 		throw error;
 	}
 }
 
-export const getMoviesByYearAsc = async (page) => {
+export const getMoviesByDuration = async (page, order) => {
 	try{
-        const resp = await fetch('http://localhost:3001/ascendingYear/' + page);
+        const resp = await fetch('http://localhost:3001/duration/' + page + '/' + order);
 		return resp.json();
 	}catch(error){
 		throw error;
 	}
 }
 
-export const getMoviesByYearDsc = async (page) => {
+export const getMoviesWithMultipleDirectors = async (page) => {
 	try{
-        const resp = await fetch('http://localhost:3001/descendingYear/' + page);
-		return resp.json();
-	}catch(error){
-		throw error;
-	}
-}
-
-export const getShortestMovies = async (page) => {
-	try{
-        const resp = await fetch('http://localhost:3001/shortests/' + page);
-		return resp.json();
-	}catch(error){
-		throw error;
-	}
-}
-
-export const getLongestMovies = async (page) => {
-	try{
-        const resp = await fetch('http://localhost:3001/longests/' + page);
+        const resp = await fetch('http://localhost:3001/multipleDirectors/' + page);
 		return resp.json();
 	}catch(error){
 		throw error;
