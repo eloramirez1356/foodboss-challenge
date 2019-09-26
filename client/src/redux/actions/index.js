@@ -1,3 +1,10 @@
+
+/**
+ * @author Eloy Ramirez Hernanz
+ * This file shows all the actors of Redux, which execute an action for modifying the state of Redux.
+ * All of the actions defined in this file returns a string for modifying the state with this string.
+ */
+
 export const switchDisplayLongest = () => {
     return{
         type: 'LONGEST'

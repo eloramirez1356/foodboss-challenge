@@ -2,6 +2,11 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Typed from 'typed.js';
 
+/**
+ * @author Eloy Ramirez Hernanz
+ * Component used for informing the user that the data is being obtained from the server and he/she have to be patient.
+ */
+
 class Loading extends PureComponent {
     componentDidMount(){
         const speed = this.props.speed || 90;

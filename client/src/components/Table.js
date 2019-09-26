@@ -4,10 +4,16 @@ import Row from './Row';
 import {connect} from 'react-redux';
 import * as actions from '../redux/actions';
 
+ /**
+  * Function used for passing the state of Redux to the properties of React components, and making possible reading the state from  React components
+  */
 const mapStateToProps = store => ({
     moviesDisplayed: store.moviesDisplayed
 })
 
+/**
+ * Function used for sending the actions of Redux to the properties of the components, and making possible modifiying the state from React Components
+ */
 const mapDispatchToProps = dispatch =>({
     switchDisplayLongest: ()=>dispatch(actions.switchDisplayLongest()),
     switchDisplayShortest: ()=>dispatch(actions.switchDisplayShortest()),
@@ -19,6 +25,10 @@ const mapDispatchToProps = dispatch =>({
     switchDisplayAlphabeticallyInverse: ()=>(actions.switchDisplayAlphabeticallyInverse())
 })
 
+/**
+ * @author Eloy Ramirez Hernanz
+ * Component Table for showing the information in a table.
+ */
 class Table extends Component {
     constructor (props){
         super(props);
@@ -28,6 +38,10 @@ class Table extends Component {
     }
 
     render() {
+        {/** This component uses all the properties passed by the parent component List. Concretely, the buttons which appears in this component are displayed
+            or hidden depending on the Redux state. In addition, when this buttons are clicked, Redux state is modified. This component has the component child Row, 
+            which is part of Table
+         */}
         const {dataMovies, nextPage, prevPage, alfAsc, alfDsc, yearAsc, yearDsc, longstDuration, shortstDuration, noFilter, multipleDirectors} = this.props;
         return (<div className="tableMovies">
         <h1>IMDB Movies Table</h1>
@@ -46,6 +60,7 @@ class Table extends Component {
                 <th>Duration (Minutes)</th>
                 <th>Year</th>
             </tr>
+            {/** After having the information of the movies, one component Row is added to the component table for showing the information of one movie */}
             {
                 dataMovies.map((movie,i) => {
                     return (<Row key={i} data={movie}/>)
